@@ -1,0 +1,53 @@
+# .NET 9 SDK - Base image for C# services
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------------------
+# Identity Service Dockerfile
+# ---------------------------------------------------------------------------
+FROM build-env AS identity-build
+COPY services/identity/*.csproj ./
+RUN dotnet restore
+COPY services/identity/. ./
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS identity-runtime
+WORKDIR /app
+COPY --from=identity-build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Airport.Identity.dll"]
+
+# ---------------------------------------------------------------------------
+# Booking Service Dockerfile
+# ---------------------------------------------------------------------------
+FROM build-env AS booking-build
+COPY services/bookings/*.csproj ./
+RUN dotnet restore
+COPY services/bookings/. ./
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS booking-runtime
+WORKDIR /app
+COPY --from=booking-build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Airport.Bookings.dll"]
+
+# ---------------------------------------------------------------------------
+# Admin Service Dockerfile
+# ---------------------------------------------------------------------------
+FROM build-env AS admin-build
+COPY services/admin/*.csproj ./
+RUN dotnet restore
+COPY services/admin/. ./
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS admin-runtime
+WORKDIR /app
+COPY --from=admin-build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Airport.Admin.dll"]

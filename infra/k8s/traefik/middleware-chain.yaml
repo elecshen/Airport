@@ -1,0 +1,11 @@
+apiVersion: traefik.io/v1alpha1
+kind: MiddlewareChain
+metadata:
+  name: protected-api-chain
+  namespace: airport-platform
+spec:
+  middlewares:
+    - name: cors-middleware
+    - name: rate-limit-middleware
+    - name: forward-auth-middleware
+    - name: strip-prefix-middleware

@@ -1,0 +1,37 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'airport-platform'
+    environment: 'dev'
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Traefik metrics
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8080']
+    metrics_path: /metrics
+
+  # Postgres exporter (would need postgres-exporter container in production)
+  # For now, we'll add it later when services are running
+
+  # Generic service discovery for .NET and Go services
+  # In docker-compose, services expose /metrics on port 8080
+  - job_name: 'services'
+    static_configs:
+      - targets: 
+        - 'identity-service:8080'
+        - 'flight-service:8080'
+        - 'booking-service:8080'
+        - 'admin-service:8080'
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '([^:]+):\d+'
+        replacement: '${1}'
