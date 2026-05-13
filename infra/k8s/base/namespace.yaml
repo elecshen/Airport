@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: airport-platform
+  labels:
+    name: airport-platform
+    istio-injection: disabled

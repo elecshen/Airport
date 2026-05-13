@@ -1,0 +1,165 @@
+version: "3.9"
+
+services:
+  # ---------------------------------------------------------------------------
+  # API Gateway & Routing
+  # ---------------------------------------------------------------------------
+  traefik:
+    image: traefik:v3.0
+    container_name: airport-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--log.level=INFO"
+      - "--log.format=json"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.endpoint=http://tempo:4317"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - airport-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=false"
+
+  # ---------------------------------------------------------------------------
+  # Databases
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: airport-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: airport_master
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - airport-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Secrets & Configuration
+  # ---------------------------------------------------------------------------
+  vault:
+    image: hashicorp/vault:1.15
+    container_name: airport-vault
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root-token
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    networks:
+      - airport-net
+
+  consul:
+    image: hashicorp/consul:1.18
+    container_name: airport-consul
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    networks:
+      - airport-net
+    command: agent -dev -client=0.0.0.0
+
+  # ---------------------------------------------------------------------------
+  # Observability Stack
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: airport-prometheus
+    volumes:
+      - ./infra/observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "9090:9090"
+    networks:
+      - airport-net
+
+  loki:
+    image: grafana/loki:2.9.3
+    container_name: airport-loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - airport-net
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    container_name: airport-tempo
+    command: -config.file=/etc/tempo.yaml
+    volumes:
+      - ./infra/observability/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/tmp/tempo
+    ports:
+      - "3200:3200" # Tempo UI
+      - "4317:4317" # OTLP gRPC
+    networks:
+      - airport-net
+
+  grafana:
+    image: grafana/grafana:10.3.4
+    container_name: airport-grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - ./infra/observability/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - airport-net
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+
+  # FluentBit for log shipping (Docker logs -> Loki)
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:2.9.0
+    container_name: airport-fluent-bit
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./infra/observability/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    networks:
+      - airport-net
+    depends_on:
+      - loki
+
+networks:
+  airport-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  prom_data:
+  tempo_data:
+  grafana_data:
