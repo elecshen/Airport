@@ -1,49 +1,68 @@
 ```
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-*.exe
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Dd]epends/
+intermediate/
+[Bb]uild/
+bin/
+obj/
+
+# Visual Studio files
+*.user
+*.userosscache
+*.suo
+*.csproj.user
+*.vbproj.user
+*.vcxproj.user
+*.userprefs
+
+# Visual Studio Code files
+.vscode/
+
+# Compiled source
 *.dll
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.iobj
+*.lib
+*.libmeta
 *.so
 *.a
-*.out
+*.exp
+*.metagen
+*.supdata
 
-# Dependencies
-.venv/
-venv/
-node_modules/
-target/
-.gradle/
+# Packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+.nuget.packages/
 
-# Logs and temp files
+# Logs
 *.log
-*.tmp
-*.swp
-*.swo
+*.svclog
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# System files
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# MyPy cache
-.mypy_cache/
-.pytest_cache/
+desktop.ini
+$RECYCLE.BIN/
 ```
