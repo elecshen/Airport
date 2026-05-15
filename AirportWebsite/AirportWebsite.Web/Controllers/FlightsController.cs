@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using AirportWebsite.Core.Interfaces;
 using AirportWebsite.Web.ViewModels;
 
@@ -29,7 +30,18 @@ public class FlightsController : Controller
         if (!string.IsNullOrWhiteSpace(origin) || !string.IsNullOrWhiteSpace(destination) || departureDate.HasValue)
         {
             var flights = await _flightsService.SearchFlightsAsync(origin, destination, departureDate);
-            viewModel.Flights = flights.ToList();
+            viewModel.Flights = flights.Select(f => new FlightListItemViewModel
+            {
+                Id = f.Id,
+                FlightNumber = f.FlightNumber,
+                Origin = f.Origin,
+                Destination = f.Destination,
+                DepartureTime = f.DepartureTime,
+                ArrivalTime = f.ArrivalTime,
+                AvailableSeats = f.AvailableSeats,
+                Price = f.BasePrice,
+                Status = f.Status.ToString()
+            }).ToList();
         }
 
         return View(viewModel);
@@ -53,7 +65,7 @@ public class FlightsController : Controller
             Destination = flight.Destination,
             DepartureTime = flight.DepartureTime,
             ArrivalTime = flight.ArrivalTime,
-            Status = flight.Status,
+            Status = flight.Status.ToString(),
             AvailableSeats = flight.AvailableSeats,
             BasePrice = flight.BasePrice,
             Gate = flight.Gate,
