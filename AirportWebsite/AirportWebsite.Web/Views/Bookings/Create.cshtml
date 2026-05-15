@@ -1,0 +1,101 @@
+@using AirportWebsite.Web.ViewModels
+@model CreateBookingViewModel
+@{
+    ViewData["Title"] = "Оформление билета";
+}
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card p-4 shadow-sm">
+            <h2 class="text-accent mb-4">Оформление бронирования</h2>
+            
+            <div class="alert alert-light border mb-4">
+                <strong>Рейс:</strong> @Model.FlightInfo<br/>
+                <strong>Цена за пассажира:</strong> @Model.TotalPrice.ToString("N0") ₽
+            </div>
+
+            <form asp-action="Create" method="post">
+                <input type="hidden" asp-for="FlightId" />
+                <input type="hidden" asp-for="TotalPrice" />
+                
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                <h4 class="mb-3">Данные пассажира</h4>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="PassengerCount" class="form-label"></label>
+                        <input asp-for="PassengerCount" class="form-control" onchange="updateTotal(this.value)" />
+                        <span asp-validation-for="PassengerCount" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Итого к оплате:</label>
+                        <div class="form-control-plaintext fw-bold" id="totalDisplay">@Model.TotalPrice.ToString("N0") ₽</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PassportNumber" class="form-label"></label>
+                        <input asp-for="PassportNumber" class="form-control" />
+                        <span asp-validation-for="PassportNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PassportCountry" class="form-label"></label>
+                        <select asp-for="PassportCountry" class="form-select">
+                            <option value="RU">Россия</option>
+                            <option value="BY">Беларусь</option>
+                            <option value="KZ">Казахстан</option>
+                            <option value="US">США</option>
+                            <option value="EU">Страны ЕС</option>
+                        </select>
+                        <span asp-validation-for="PassportCountry" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label"></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h4 class="mb-3">Оплата</h4>
+                <div class="mb-4">
+                    <label asp-for="CardNumber" class="form-label"></label>
+                    <input asp-for="CardNumber" class="form-control" placeholder="0000000000000000" maxlength="16" />
+                    <span asp-validation-for="CardNumber" class="text-danger"></span>
+                    <small class="text-muted d-block mt-1">Используйте любую карту кроме 4111111111111111 для теста успеха.</small>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Оплатить и забронировать</button>
+                    <a asp-action="Index" asp-controller="Flights" class="btn btn-outline-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateTotal(count) {
+            const basePrice = @Model.TotalPrice;
+            const total = basePrice * count;
+            document.getElementById('totalDisplay').innerText = total.toLocaleString('ru-RU') + ' ₽';
+        }
+    </script>
+}
