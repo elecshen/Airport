@@ -1,0 +1,56 @@
+@using AirportWebsite.Web.ViewModels
+@model List<UserBookingsViewModel>
+@{
+    ViewData["Title"] = "Мои билеты";
+}
+
+<h2 class="text-accent mb-4">История бронирований</h2>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>№ заказа</th>
+                    <th>Рейс</th>
+                    <th>Маршрут</th>
+                    <th>Дата</th>
+                    <th>Пассажир</th>
+                    <th>Статус</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.BookingReference</strong></td>
+                        <td>@item.FlightNumber</td>
+                        <td>@item.Origin → @item.Destination</td>
+                        <td>@item.DepartureTime.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@item.PassengerName</td>
+                        <td>
+                            @{
+                                var badgeClass = item.Status switch
+                                {
+                                    "Paid" => "bg-success",
+                                    "Pending" => "bg-warning",
+                                    "Cancelled" => "bg-danger",
+                                    "Expired" => "bg-secondary",
+                                    _ => "bg-info"
+                                };
+                            }
+                            <span class="badge @badgeClass">@item.Status</span>
+                        </td>
+                        <td>@item.TotalPrice.ToString("N0") ₽</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">У вас пока нет бронирований. <a asp-controller="Flights" asp-action="Index">Найти рейс</a></div>
+}

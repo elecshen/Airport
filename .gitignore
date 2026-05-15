@@ -1,57 +1,49 @@
 ```
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
-# Visual Studio Code
-.vscode/
+# Dependencies
+.venv/
+venv/
+node_modules/
+target/
+.gradle/
 
-# Visual Studio
-*.user
-*.userosscache
-*.suo
-*.csproj.user
-*.vbproj.user
-*.fsproj.user
-*.userprefs
-
-# ASP.NET Core
-*.dbmdl
-*.dbproj.schemaview.xml
-*.[Mm]odel.[Cc]ore.bin
-*.[Rr]ules.[Cc]ore.bin
-
-# NuGet Packages
-*.nupkg
-!*.nuspec
-
-# Package Manager
-packages/
-project.lock.json
-project.fragment.lock.json
-artifacts/
-
-# System
-.DS_Store
-Thumbs.db
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# Logs
-*.log
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Temporary files
-*.tmp
-*.temp
+# System files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# MyPy cache
+.mypy_cache/
+.pytest_cache/
 ```
