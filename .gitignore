@@ -6,52 +6,63 @@
 [Rr]eleases/
 x64/
 x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
+[Dd]epends/
+intermediate/
+[Bb]uild/
+bin/
+obj/
 
-# Visual Studio Code
-.vscode/
-
-# Visual Studio
+# Visual Studio files
 *.user
 *.userosscache
 *.suo
 *.csproj.user
 *.vbproj.user
-*.fsproj.user
+*.vcxproj.user
 *.userprefs
 
-# ASP.NET Core
-*.dbmdl
-*.dbproj.schemaview.xml
-*.[Mm]odel.[Cc]ore.bin
-*.[Rr]ules.[Cc]ore.bin
+# Visual Studio Code files
+.vscode/
 
-# NuGet Packages
+# Compiled source
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.obj
+*.iobj
+*.lib
+*.libmeta
+*.so
+*.a
+*.exp
+*.metagen
+*.supdata
+
+# Packages
 *.nupkg
-!*.nuspec
-
-# Package Manager
+*.snupkg
 packages/
-project.lock.json
-project.fragment.lock.json
-artifacts/
+.nuget/
+.nuget.packages/
 
-# System
-.DS_Store
-Thumbs.db
+# Logs
+*.log
+*.svclog
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
 ```
