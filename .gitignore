@@ -1,0 +1,57 @@
+```
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+*.user
+*.userosscache
+*.suo
+*.csproj.user
+*.vbproj.user
+*.fsproj.user
+*.userprefs
+
+# ASP.NET Core
+*.dbmdl
+*.dbproj.schemaview.xml
+*.[Mm]odel.[Cc]ore.bin
+*.[Rr]ules.[Cc]ore.bin
+
+# NuGet Packages
+*.nupkg
+!*.nuspec
+
+# Package Manager
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+```
